@@ -41,9 +41,42 @@ window.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    const message = {
+        success: 'Company added successfully',
+        failure: 'Somethink was wrong...'
+    };
 
     modal('[data-modal]', '.modal');
-    console.log(myForm);
+
+
+
+    function showThanksModal(message, textColor) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        openModal('.modal');
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.style.color = textColor;
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+        if (message === message.success) {
+            
+        } else {
+        }
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal('.modal');
+        }, 4000);
+    }
 
     function bindPostData(form) {
         form.addEventListener('submit', (event) => {
@@ -59,16 +92,28 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
                 return await res.json();
             };
-            
+
             const formData = new FormData(form);
-        
-            const json = JSON.stringify(Object.fromEntries(formData.entries())); 
-            postData('https://httpbin.org/post', json)
-            .then(data => {
-                console.log(data);
-            });
+
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+            postData('https://htpbin.org/post', json)
+                .then(data => {
+                    console.log(data);
+                    closeModal('.modal');
+                    showThanksModal(message.success, "green");
+
+                })
+                .catch(() => {
+                    console.log('errorrr....');
+                    closeModal('.modal');
+                    showThanksModal(message.failure, "red");
+                })
+                .finally(() => form.reset());
         });
     }
+
+
+
     bindPostData(myForm);
 
 });
